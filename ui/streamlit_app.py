@@ -34,29 +34,56 @@ if css_path.exists():
 
 # Helpers
 def lookup_meta(name: str):
+    """Tra cứu thông tin sản phẩm theo tên (item_id)."""
     if products_df is None:
         return {"name": name, "price": None, "category": None}
-    row = products_df[products_df.item_id.str.lower() == name.lower()]
-    return {"name": name, "price": row.iloc[0].price, "category": row.iloc[0].category} if not row.empty else {"name": name, "price": None, "category": None}
+
+    match = products_df.loc[products_df.item_id.str.lower() == name.lower()]
+
+    if not match.empty:
+        info = match.iloc[0]
+        return {
+            "name": name,
+            "price": info.price,
+            "category": info.category
+        }
+
+    return {"name": name, "price": None, "category": None}
+
 
 def html_card(meta, score=None):
-    price = f"<br><span class='item-price'>Price: ${meta['price']:.2f}</span>" if meta['price'] else ""
-    cat   = f"<br><span class='item-cat'>Category: {meta['category']}</span>" if meta['category'] else ""
-    rank  = f"<br><span class='item-rank'>Score: {score:.4f}</span>" if score is not None else ""
-    return f"<div class='recommend-item'><strong>{meta['name']}</strong>{price}{cat}{rank}</div>"
+    """Tạo HTML cho một sản phẩm."""
+    parts = [f"<strong>{meta['name']}</strong>"]
+
+    if meta.get("price"):
+        parts.append(f"<br><span class='item-price'>Price: ${meta['price']:.2f}</span>")
+    if meta.get("category"):
+        parts.append(f"<br><span class='item-cat'>Category: {meta['category']}</span>")
+    if score is not None:
+        parts.append(f"<br><span class='item-rank'>Score: {score:.4f}</span>")
+
+    return f"<div class='recommend-item'>{''.join(parts)}</div>"
+
 
 def render_block(title, items):
+    """Hiển thị khối gợi ý sản phẩm."""
     st.markdown(f"<div class='recommend-box'><h3>{title}</h3><div>", unsafe_allow_html=True)
+
     if not items:
         st.markdown("<em>No recommendations available.</em>", unsafe_allow_html=True)
-    for it in items:
-        if isinstance(it, dict):
-            name = it.get("item", "")
-            score = it.get("score", None)
+        st.markdown("</div></div>", unsafe_allow_html=True)
+        return
+
+    for item in items:
+        if isinstance(item, dict):
+            name = item.get("item", "")
+            score = item.get("score")
         else:
-            name = it
-            score = None
-        st.markdown(html_card(lookup_meta(name), score), unsafe_allow_html=True)
+            name, score = item, None
+
+        meta = lookup_meta(name)
+        st.markdown(html_card(meta, score), unsafe_allow_html=True)
+
     st.markdown("</div></div>", unsafe_allow_html=True)
 
 # User list
