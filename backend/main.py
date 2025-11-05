@@ -35,6 +35,7 @@ async def log_requests(request: Request, call_next):
     logger.info("%s %s | %d | %.2f ms", request.method, request.url.path, response.status_code, duration)
     return response
 
+# Health check endpoint
 @app.get("/health")
 def health():
     return {"status": "ok", "message": "API is running"}

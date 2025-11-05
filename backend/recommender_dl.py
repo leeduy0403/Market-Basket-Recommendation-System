@@ -47,6 +47,7 @@ class DLRecommender:
         self.model = NCF(n_users, n_items).eval()
         self.model.load_state_dict(ckpt["model"])
 
+    # Inference
     @torch.inference_mode()
     def recommend(self, user_id: Union[int, str], top_k: int = 5) -> List[Dict[str, float]]:
         try:
