@@ -221,16 +221,6 @@ Interactive Docs
 
 - Swagger UI: http://localhost:8000/docs
 
-### Endpoints
-
-| Method | Endpoint             | Query Params                              | Description                                                                            |
-
-| ------ | -------------------- | ----------------------------------------- | -------------------------------------------------------------------------------------- |
-
-| GET    | `/recommend/by-item` | `item` (str), `top_k` (int, default=5)    | Recommend items frequently bought together using **FP-Growth**.                        |
-
-| GET    | `/recommend/by-user` | `user_id` (int), `top_k` (int, default=5) | Recommend items based on user behavior using **Neural Collaborative Filtering (NCF)**. |
-
 
 ### Example Requests
 
